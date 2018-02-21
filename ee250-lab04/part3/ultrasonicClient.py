@@ -10,6 +10,7 @@ import sys
 sys.path.append('../../Software/Python/')
 
 import grovepi
+from grovepi import *
 import socket
 
 ultrasonic_ranger = 4
@@ -18,7 +19,7 @@ ultrasonic_ranger = 4
 def Main():
     # Change the host and port as needed. For ports, use a number in the 9000 
     # range. 
-    host = '10.0.2.15' #rpi IP Address 
+    host = '192.168.1.213' #rpi IP Address 
     port = 1023    
 
     server_addr = '192.168.1.133' #host OS ip address
@@ -32,4 +33,9 @@ def Main():
     server = (server_addr, int(dst_port))
     while True:
         # for UDP, sendto() and recvfrom() are used instead
-        s.sendto(grovepi.ultrasonicRead(ultrasonic_ranger), server) 
+        st = str(grovepi.ultrasonicRead(ultrasonic_ranger))
+        s.sendto(st.encode('utf-8'), server) 
+        
+if __name__ == '__main__':
+    Main() 
+

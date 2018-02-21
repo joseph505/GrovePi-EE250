@@ -11,9 +11,9 @@ sys.path.append('../../Software/Python/')
 
 #UNCOMMENT THIS WHEN ACTUALLY DEPLOYING ON GROVEPI
 import grovepi
-
+from grovepi import *
 #Digital port d4 
-led = 4 
+led = 3 
 pinMode(led, "OUTPUT") 
 
 import socket
@@ -23,7 +23,7 @@ import socket
 # use TCP
 
 def Main():
-    host = '127.0.0.1' #GrovePi IP Address 
+    host = '192.168.1.213' #GrovePi IP Address 
     port = 5000
 
     s = socket.socket()
@@ -40,16 +40,17 @@ def Main():
         data = data.upper()
 
         #added this - Joseph
-        on = "LED ON"
-        off = "LED OFF"
+        on = "LED_ON"
+        off = "LED_OFF"
         if data == on:
             digitalWrite(led, 1)
-            data = data + " inside if statement"
+            data = data + " SUCCESS!"
       
         elif data == off:
-            digitalWrite(led, 0) 
-           data = data + " inside if statement"
-        
+             digitalWrite(led, 0) 
+             data = data + " SUCCESS!"
+        else:
+            data = "Command " +data + " not recognized"
         print("Sending: " + data)
         c.send(data.encode('utf-8'))
     c.close()
