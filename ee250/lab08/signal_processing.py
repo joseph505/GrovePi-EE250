@@ -93,6 +93,12 @@ def decide():
 
     if(sum1 < 10 and sum1 > -10 and sum2 < 10 and sum2 > -10):
         print("Standing still")
+        if (ranger1_dist_avg[9] > ranger2_dist_avg[9]):
+            print("Still right")
+        elif (ranger2_dist_avg[9] > ranger1_dist_avg[9]):
+            print("Still left")
+        else:
+            print("Still center") 
     elif(sum1 > 10 and sum2 < -10):
         print("moving right")
     elif(sum2 > 10 and sum1 < -10):
