@@ -18,6 +18,9 @@ ranger2_dist = []
 ranger1_dist_avg = []
 ranger2_dist_avg = []
 
+# the threshold for determining if people are standing still
+threshold = 3
+
 def ranger1_callback(client, userdata, msg):
     global ranger1_dist
     if(int(msg.payload) > 120):
@@ -87,22 +90,36 @@ def decide():
     sum1 = 0
     sum2 = 0
 
+    # sum up all the values in both distance arrays
     for i in range(9, 0, -1):
         sum1 = sum1 + ranger1_dist_avg[i] - ranger1_dist_avg[i-1]
         sum2 = sum2 + ranger2_dist_avg[i] - ranger2_dist_avg[i-1]
 
-    if(sum1 < 10 and sum1 > -10 and sum2 < 10 and sum2 > -10):
-        print("Standing still")
-        if (ranger1_dist_avg[9] > ranger2_dist_avg[9]):
-            print("Still right")
-        elif (ranger2_dist_avg[9] > ranger1_dist_avg[9]):
-            print("Still left")
-        else:
-            print("Still center") 
-    elif(sum1 > 10 and sum2 < -10):
-        print("moving right")
-    elif(sum2 > 10 and sum1 < -10):
-        print("moving left")
+    # only print things out if someone is standing between the sensors 
+    if(not(ranger1_dist[9] == 120 and ranger2_dist[9] == 120)):
+        # the case if the user is standing still
+        # added case of +- 10 for both sums to account for noise
+        if((sum1 < threshold and sum1 > -(threshold)) and (sum2 < threshold and sum2 > -(threshold))):
+            print("Standing still")
+
+            # the distance is split into thirds since it is 120cm
+            # if the first sensor reads it less than 40 then standing left
+            # if the first sensor reads it between 40 and 80 then standing center
+            # if the first sensor reads it greater than 80 then standing right
+            if (ranger1_dist[9] > 80):
+                print("Still right")
+            elif (ranger1_dist[9] < 40):
+                print("Still left")
+            else:
+                print("Still center") 
+
+        # if the sum of the left sensor is increasing and the right sensor is decreasing
+        elif(sum1 > threshold and sum2 < -(threshold)):
+            print("moving right")
+
+        # if the sum of the left sensor is decreasing and the right sensor is increasing
+        elif(sum2 > threshold and sum1 < -(threshold)):
+            print("moving left")
 
 # main function 
 if __name__ == '__main__':
@@ -118,40 +135,36 @@ if __name__ == '__main__':
     # start the sampling
     client.loop_start()
 
-    # message for the user 
-    print("Please wait 5 seconds for system to initialize...")
+    # message for the user to initialize the sensors and average arrays with proper values
+    print("Initializing the sensors please wait...")
 
     #indices for the while loop
-    i = 0
-    j = 0
+    i = 0   # used to count to 5 seconds to initialize system
+    j = 0   # used to count to 2 seconds to call decide()
 
     while True:
-        """ You have two lists, ranger1_dist and ranger2_dist, which hold a window
-        of the past MAX_LIST_LENGTH samples published by ultrasonic ranger 1
-        and 2, respectively. The signals are published roughly at intervals of
-        200ms, or 5 samples/second (5 Hz). The values published are the 
-        distances in centimeters to the closest object. Expect values between 
-        0 and 512. However, these rangers do not detect people well beyond 
-        ~125cm. """
-
+        # count to 5 seconds
         if(i < 25):
             i = i + 1
 
+        # at 5 seconds, let the user know that you can move in front of the sensors
         elif(i == 25):
             print("you may now move in front of the sensor")
             i = i +1
 
+        # run the info from the sensor
         else:
             # print("ranger1: " + str(ranger1_dist[-1:]) + ", ranger2: " + 
             #     str(ranger2_dist[-1:])) 
 
-            # print("ranger1 average: " + str(ranger1_dist_avg[-1:]) + ", ranger2 average: " + 
-            #     str(ranger2_dist_avg[-1:]))
+            # after 2 seconds, call decide() to see what direction the user is moving
             if(j == 10):
-                decide()
-                j = 0
+                decide()    # call decide() to print direction or standing still
+                j = 0       # set the counter back to 0
 
+            # increment j counter
             j = j + 1
             
         
+        # default sleep timer given to us
         time.sleep(0.2)
