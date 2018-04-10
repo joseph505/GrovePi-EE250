@@ -124,44 +124,44 @@ def decide():
             # the distance is split into thirds since it is 120cm
             # if the first sensor reads it greater than 80 then standing right
             if(ranger1_dist[9] > 80):
-                print("Standing right")
+                print("Still - Right")
                 payload = {
                     'time': str(datetime.now()),
-                    'event': "Standing right"
+                    'event': "Still - Right"
                 }
 
             # if the first sensor reads it less than 40 then standing left
             elif (ranger1_dist[9] < 40):
-                print("Standing left")
+                print("Still - Left")
                 payload = {
                     'time': str(datetime.now()),
-                    'event': "Standing left"
+                    'event': "Still - Left"
                 }
 
             # if the first sensor reads it between 40 and 80 then standing center
             else:
-                print("Standing center") 
+                print("Still - Middle") 
                 payload = {
                     'time': str(datetime.now()),
-                    'event': "Standing center"
+                    'event': "Still - Middle"
                 }
 
         # if the sum of the left sensor is increasing and the right sensor is decreasing
         elif(sum1 > threshold and sum2 < -(threshold)):
             checkIfStatement = True
-            print("moving right")
+            print("Moving Right")
             payload = {
                 'time': str(datetime.now()),
-                'event': "Moving right"
+                'event': "Moving Right"
             }
 
         # if the sum of the left sensor is decreasing and the right sensor is increasing
         elif(sum2 > threshold and sum1 < -(threshold)):
             checkIfStatement = True
-            print("moving left")
+            print("Moving Left")
             payload = {
                 'time': str(datetime.now()),
-                'event': "Moving left"
+                'event': "Moving Left"
             }
 
         # if the data was clean, then send to http server to display on port 0.0.0.0:5000/log
