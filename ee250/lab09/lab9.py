@@ -1,9 +1,16 @@
+import sys
+
 import paho.mqtt.client as mqtt
 import time
+
+sys.path.append('../../Software/Python/')
+
 from grovepi import *
 from grove_rgb_lcd import *
 
 dht_sensor_port = 7
+led = 4
+light = "off"
 
 #Custom callbacks need to be structured with three args like on_message()
 def message_callback(client, userdata, message):
@@ -25,6 +32,14 @@ def light_callback(client, userdata, message):
     #       str(type(message.payload)))    
 
     print("In light callback turn on light")
+
+    if light == "off":
+        digitalWrite(led,1)
+        light = "on"
+    else:
+        digitalWrite(led,0)
+        light = "off"
+
 
 """Since we attached this function to the mqtt client below, this function 
 (or "callback") will be executed when this client receives a CONNACK (i.e., 
