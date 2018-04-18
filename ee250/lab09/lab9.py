@@ -6,7 +6,7 @@ import time
 sys.path.append('../../Software/Python/')
 
 from grovepi import *
-from grove_rgb_lcd import *
+from grove_rgb_lcd import grove_rgb_lcd 
 
 dht_sensor_port = 7
 led = 4
@@ -22,6 +22,7 @@ def message_callback(client, userdata, message):
     #       str(type(message.payload)))
 
     print("in message callback print message")
+    grove_rgb_lcd.setText(message.payload)
 
 def light_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
@@ -59,7 +60,7 @@ def on_connect(client, userdata, flags, rc):
     # subscribe to the topic. Then, add the callback.
     client.subscribe("anrg-pi4/message")
     client.message_callback_add("anrg-pi4/message", message_callback)
-    client.subscribe("arg-pi4/light")
+    client.subscribe("anrg-pi4/light")
     client.message_callback_add("anrg-pi4/light", light_callback)
 
 
@@ -115,14 +116,21 @@ if __name__ == '__main__':
     following line which will ask paho-mqtt to spawn a separate thread to handle
     incoming and outgoing mqtt messages."""
     client.loop_start()
-
+    pinMode(led,"OUTPUT")
     #Since the library will take care of things in the background, we can use
     #this thread to regularly publish messages.
     time.sleep(1)
 
+    print("Before the while loop")
+    digitalWrite(led, 0)
+    grove_rgb_lcd.setRGB(0,128,64)
+    grove_rgb_lcd.setRGB(0,255,0)
+    
     while (True):
         try:
             [ temp,hum ] = dht(dht_sensor_port,1)
+
+            print(str(temp) + " " + str(hum))
 
             client.publish("anrg-pi4/temperature", str(temp))
             client.publish("anrg-pi4/humidity", str(hum))
