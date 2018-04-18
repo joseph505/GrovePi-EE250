@@ -1,6 +1,5 @@
 import paho.mqtt.client as mqtt
 import time
-
 from grovepi import *
 from grove_rgb_lcd import *
 
@@ -114,7 +113,7 @@ if __name__ == '__main__':
             client.publish("anrg-pi4/humidity", str(hum))
 
         except(IOError,TypeError) as e:
-            print "Error"
+            print("Error")
 
         time.sleep(1)
 
