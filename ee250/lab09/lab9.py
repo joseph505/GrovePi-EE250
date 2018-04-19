@@ -22,7 +22,8 @@ def message_callback(client, userdata, message):
     #       str(type(message.payload)))
 
     print("in message callback print message")
-    grove_rgb_lcd.setText(message.payload)
+    grove_rgb_lcd.setText(str(msg.payload, "utf-8"))
+    
 
 def light_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
